@@ -93,7 +93,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>pthreadVC2.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalDependencies>pthreadVC2.lib;wsock32.lib;ws2_32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>lib;lib\Pre-built.2</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
