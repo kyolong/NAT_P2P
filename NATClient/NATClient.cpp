@@ -71,8 +71,8 @@ int main()
 	exAddr.sin_port = htons((u_short)(MAIN_PORT + 1));
 
 	SOCKADDR_IN addrLocal;
-	//addrLocal.sin_addr.S_un.S_addr = INADDR_ANY;
-	inet_pton(AF_INET, "192.168.16.104", (void*)&(addrLocal.sin_addr));
+	addrLocal.sin_addr.S_un.S_addr = INADDR_ANY;
+	//inet_pton(AF_INET, "192.168.16.104", (void*)&(addrLocal.sin_addr));
 	addrLocal.sin_family = AF_INET;
 	char  recvBuf[128];
 	int needRecv = 16;
