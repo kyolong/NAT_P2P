@@ -12,7 +12,7 @@
 using namespace std;
 
 
-#define MAIN_PORT 33000
+#define MAIN_PORT 3000
 
 
 
@@ -150,6 +150,7 @@ void* extendPortThreadProc(void * mParam)
 			}
 
 		}
+		closesocket(socketCommunication);
 
 
 	}
