@@ -5,7 +5,7 @@
 #include <Winsock2.h>
 #include <WS2tcpip.h>
 #include <stdio.h>
-#define  MAIN_PORT 33000
+#define  MAIN_PORT 3000
 #define SERVER_IP "127.0.0.1"
 int main()
 {
@@ -64,7 +64,11 @@ int main()
 	int flag = 1;
 	int len = sizeof(int);
 	SOCKET exSock = socket(AF_INET, SOCK_STREAM, 0);
-	setsockopt(exSock, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+	int reret = setsockopt(exSock, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+	if (0 != reret)
+	{
+		printf("reuse faild");
+	}
 	SOCKADDR_IN exAddr;
 	inet_pton(AF_INET, serverip, (void*)&(exAddr.sin_addr));
 	exAddr.sin_family = AF_INET;
@@ -72,7 +76,7 @@ int main()
 
 	SOCKADDR_IN addrLocal;
 	addrLocal.sin_addr.S_un.S_addr = INADDR_ANY;
-	//inet_pton(AF_INET, "192.168.16.104", (void*)&(addrLocal.sin_addr));
+//	inet_pton(AF_INET, "192.168.55.104", (void*)&(addrLocal.sin_addr));
 	addrLocal.sin_family = AF_INET;
 	char  recvBuf[128];
 	int needRecv = 16;
@@ -138,7 +142,11 @@ int main()
 		printf("to connect,ip:%s,port:%d,requestID:%d\n", tmpIP, peerPort, requestID);
 		
 		SOCKET exSock_ex = socket(AF_INET, SOCK_STREAM, 0);
-		setsockopt(exSock_ex, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+		reret = setsockopt(exSock_ex, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+		if (0 != reret)
+		{
+			printf("reuse faild");
+		}
 		if (SOCKET_ERROR == bind(exSock_ex, (SOCKADDR *)&addrLocal, sizeof(SOCKADDR)))
 		{
 			printf("bind faild");
@@ -217,9 +225,14 @@ int main()
 		tmp = (int*)sendbuff;
 		*tmp = htonl(ID);
 		send(exSock, sendbuff, 4, 0);
-		//closesocket(exSock);
+		closesocket(exSock);
+		Sleep(1000);
 		SOCKET exSock_new = socket(AF_INET, SOCK_STREAM, 0);
-		setsockopt(exSock_new, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+		reret = setsockopt(exSock_new, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+		if (0 != reret)
+		{
+			printf("reuse faild");
+		}
 		if (SOCKET_ERROR == bind(exSock_new, (SOCKADDR *)&addrLocal, sizeof(SOCKADDR)))
 		{
 			printf("bind faild\n");
@@ -234,7 +247,7 @@ int main()
 			cnt++;
 			printf("refuck %d\n", WSAGetLastError());
 			Sleep(500);
-			if (2 < cnt)
+			if (10 < cnt)
 			{
 				
 				break;
@@ -245,7 +258,11 @@ int main()
 		printf("end fuck nat\n");
 		//closesocket(exSock);
 		SOCKET exSock_ex = socket(AF_INET, SOCK_STREAM, 0);
-		setsockopt(exSock_ex, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+		reret = setsockopt(exSock_ex, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, len);
+		if (0 != reret)
+		{
+			printf("reuse faild");
+		}
 		if (SOCKET_ERROR == bind(exSock_ex, (SOCKADDR *)&addrLocal, sizeof(SOCKADDR)))
 		{
 			printf("bind faild");
@@ -268,19 +285,29 @@ int main()
 		SOCKET socketCommunication;
 		int len = sizeof(SOCKADDR);
 		
-
-
-			if (INVALID_SOCKET == (socketCommunication = accept(exSock_ex, NULL, NULL)))
+		while (SOCKET_ERROR == connect(exSock_new, (struct sockaddr*) &addrPeer, sizeof(addrPeer)))
+		{
+			cnt++;
+			printf("refuck %d\n", WSAGetLastError());
+			Sleep(500);
+			if (10 < cnt)
 			{
-				printf("accept failderr:%d\n", WSAGetLastError());
 
-	
+				break;
 			}
+		}
+
+// 			if (INVALID_SOCKET == (socketCommunication = accept(exSock_ex, NULL, NULL)))
+// 			{
+// 				printf("accept failderr:%d\n", WSAGetLastError());
+// 
+// 	
+// 			}
 			printf("success£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡\n");
 			char pr;
 			while (true)
 			{
-				recv(socketCommunication, &pr, 1, 0);
+				recv(exSock_new, &pr, 1, 0);
 				printf("%c", pr);
 				Sleep(10);
 			}
